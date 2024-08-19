@@ -1,0 +1,19 @@
+-in:file:s prot-pep.pdb
+-nstruct 50
+-relax:default_repeats 10
+-ignore_unrecognized_res
+-out:path:pdb ./relax2
+-out:path:score ./relax2
+-load_PDB_components false 
+-include_sugars
+-auto_detect_glycan_connections 
+-min_bond_length 1.1 
+-max_bond_length 1.7 
+-relax:constrain_relax_to_start_coords
+-relax:ramp_constraints false
+-alternate_3_letter_codes pdb_sugar
+-ex1
+-ex2
+-use_input_sc
+-flip_HNQ
+-no_optH false
