@@ -1,0 +1,32 @@
+#GMX runing
+gmx pdb2gmx -f best.pdb -o 1.pdb -ignh
+gmx editconf -f 1.pdb -bt triclinic -d 1.1 -c -o box.gro
+gmx solvate -cp box.gro  -p topol.top -o solv.gro
+gmx grompp -f ions.mdp -c solv.gro -p topol.top -o ions.tpr
+gmx genion -s ions.tpr -o solv_ions.gro -p topol.top -conc 0.15 -neutral
+gmx grompp -f em.mdp -c solv_ions.gro -p topol.top -o em.tpr
+gmx mdrun -v -deffnm em
+
+gmx grompp -f nvt.mdp -c em.gro -r em.gro -p topol.top -o nvt.tpr
+gmx mdrun -deffnm nvt -v
+
+gmx grompp -f npt.mdp -c nvt.gro -t nvt.cpt -r nvt.gro -p topol.top -o npt.tpr
+gmx mdrun -deffnm npt -v
+
+gmx grompp -f md.mdp -c npt.gro -t npt.cpt -p topol.top -o md.tpr
+gmx mdrun -deffnm md -v
+
+
+#GMX analysis
+gmx rms -f md.xtc -s md.tpr -o rmsdcd44.xvg -tu ns -n index.ndx
+gmx rmsf -f md.xtc -s md.tpr -n index.ndx -o rmsfCD44.xvg -res
+gmx sasa -f md.xtc -s md.tpr -n index.ndx -tu ns -o sasaIK1.xvg
+gmx gyrate -f md.xtc -s md.tpr -o rgCD44.xvg -n index.ndx
+gmx rdf -f md.xtc -s md.tpr -o rdfcomplexIK1.xvg -n index.ndx -tu ns -ref 1 -sel 13
+gmx hbond -f md.xtc -s md.tpr -n index.ndx -tu ns -temp 310 -num IK1HBOND.xvg -hbm IK1hondmap.xpm
+gmx mindist -f md.xtc -s md.tpr -od IK1MINDIST.xvg -on IK1numc.xvg -tu ns -n index.ndx 
+gmx rdf -f md.xtc -s md.tpr -o rdfcomplexIK1.xvg -n index.ndx -tu ns -ref 1 -sel 13
+gmx covar -f md.xtc -s md.tpr -o CD44COVAR.xvg -av CD44AV.pdb -xpm CD44COVAR.xpm -tu ns -n index.ndx
+gmx covar -f md.xtc -s md.tpr -o IK1COVAR.xvg -av IK1AV.pdb -xpm IK1COVAR.xpm -tu ns -n index.ndx 
+gmx do_dssp  -f md.xtc -s md.tpr -o CD44SS.xpm -sc CD44SS.xvg -aa CD44SSaveragearea.xvg -n index.ndx -tu ns -ver 4
+gmx trjconv -f md.xtc -s md.tpr -dt 200 -o shortcd44.xtc -center -ur compact -pbc mol -n index.ndx
