@@ -1,1 +1,2 @@
 # PHD-THESIS
+My PhD dissertation focused on peptide design for targeting cancer cell invasion through the development of CD44 inhibitor peptides. Initially, I designed a peptide library using OSPREY and ROSETTA. Then, peptides with the best scores and greatest similarity to the A6 peptide underwent additional steps, including DDG evaluation, molecular dynamics, RT-qPCR, invasion assays, and zymography.
